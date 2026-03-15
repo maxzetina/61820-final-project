@@ -1,6 +1,6 @@
 // --- CONFIG ---
 const int speakerPin = 9;       // Use PWM-capable pin or DAC output
-const int bitDuration = 20;     // in milliseconds
+const int bitDuration = 50;     // in milliseconds
 const int toneFreq = 500;      // Hz for bit '1'
 
 // Sensor types
@@ -14,7 +14,7 @@ int sensorType = TEMP_TYPE;     // For testing
 #include <EEPROM.h>
 
 #define COND_PIN A1
-float voltage,ecValue,temperature = 25;
+float voltage, ecValue, temperature = 25;
 DFRobot_EC ec;
 
 
@@ -101,20 +101,20 @@ void loop() {
   //   if(millis()-timepoint>1000U)  //time interval: 1s
   //   {
   //     timepoint = millis();
-  //     voltage = analogRead(COND_PIN)/1024.0*5000;   // read the voltage
-  //     temperature = readTemperature();          // read your temperature sensor to execute temperature compensation
-  //     ecValue =  ec.readEC(voltage,temperature);  // convert voltage to EC with temperature compensation
-  //     Serial.print("temperature:");
-  //     Serial.print(temperature,1);
-  //     Serial.print("^C  EC:");
-  //     Serial.print(ecValue,2);
-  //     Serial.println("ms/cm");
+      voltage = analogRead(COND_PIN)/1024.0*5000;   // read the voltage
+      temperature = readTemperature();          // read your temperature sensor to execute temperature compensation
+      ecValue = ec.readEC(voltage,temperature);  // convert voltage to EC with temperature compensation
+      Serial.print("temperature:");
+      Serial.println(temperature);
+      Serial.print("^C  EC:");
+      Serial.print(ecValue);
+      Serial.println("ms/cm");
   //   }
-  //   ec.calibration(voltage,temperature);          // calibration process by Serail CMD
+    ec.calibration(voltage,temperature);          // calibration process by Serail CMD
 
     
-    uint16_t tempScaled = 21 * 100;//temperature * 100;                // Scale to 14-bit range (0–16368)
-    uint16_t condScaled = 4 * 100;//ecValue * 100;                // Scale to 14-bit range (0–16368)
+    uint16_t tempScaled = temperature * 100;                // Scale to 14-bit range (0–16368)
+    uint16_t condScaled = ecValue * 100;                // Scale to 14-bit range (0–16368)
 
     sendPacket(tempScaled, condScaled);                        // Transmit packet
   //   // delay(3000);                               // 1 reading every 3 seconds
